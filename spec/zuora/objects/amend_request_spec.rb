@@ -112,8 +112,8 @@ describe Zuora::Objects::AmendRequest do
         xml = Zuora::Api.instance.last_request
         xml.should have_xml("//env:Body/#{zns}:amend/#{zns}:requests/#{zns}:Amendments")
         xml.should have_xml("//env:Body/#{zns}:amend/#{zns}:requests/#{zns}:Amendments/#{ons}:RatePlanData")
-        xml.should have_xml("//env:Body/#{zns}:amend/#{zns}:requests/#{zns}:Amendments/#{ons}:RatePlanData/#{ons}:RatePlan")
-        xml.should have_xml("//env:Body/#{zns}:amend/#{zns}:requests/#{zns}:Amendments/#{ons}:RatePlanData/#{ons}:RatePlan/#{zns}:ProductRatePlanId").with_value(
+        xml.should have_xml("//env:Body/#{zns}:amend/#{zns}:requests/#{zns}:Amendments/#{ons}:RatePlanData/#{zns}:RatePlan")
+        xml.should have_xml("//env:Body/#{zns}:amend/#{zns}:requests/#{zns}:Amendments/#{ons}:RatePlanData/#{zns}:RatePlan/#{ons}:ProductRatePlanId").with_value(
             subject.amendment.rate_plan_data.rate_plan.product_rate_plan_id
           )
       end
