@@ -30,7 +30,9 @@ module Zuora::Objects
             generate_object(a, amendment)
 
             unless amendment.rate_plan_data.nil?
-              serialize(a, :RatePlanData, amendment.rate_plan_data)
+              a.__send__(ons, :RatePlanData) do |rpd|
+                serialize(a, :RatePlan, amendment.rate_plan_data.rate_plan)
+              end
             end
           end
 
@@ -87,13 +89,13 @@ module Zuora::Objects
 
     def serialize(xml, key, value)
       if value.kind_of?(Zuora::Objects::Base)
-        xml.__send__(ons, key.to_sym) do |child|
+        xml.__send__(zns, key.to_sym) do |child|
           value.to_hash.each do |k, v|
             serialize(child, k.to_s.zuora_camelize, convert_value(v)) unless v.nil?
           end
         end
       else
-        xml.__send__(zns, key.to_sym, convert_value(value))
+        xml.__send__(ons, key.to_sym, convert_value(value))
       end
     end
 
