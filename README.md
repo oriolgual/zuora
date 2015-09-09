@@ -1,7 +1,8 @@
-# Zuora [![Build Status](https://secure.travis-ci.org/invoice2go/zuora.png?branch=master)](http://travis-ci.org/invoice2go/zuora) [![Gemnasium](https://gemnasium.com/wildfireapp/zuora.png)](https://gemnasium.com/invoice2go/zuora)
+# Invoice2go Zuora [![Build Status](https://secure.travis-ci.org/invoice2go/zuora.png?branch=master)](http://travis-ci.org/invoice2go/zuora) [![Gemnasium](https://gemnasium.com/wildfireapp/zuora.png)](https://gemnasium.com/invoice2go/zuora)
 
-This library allows you to interact with [Zuora](http://www.zuora.com) billing platform directly using 
-familiar [ActiveModel](https://github.com/rails/rails/tree/master/activemodel) based objects.
+This is a fork of Wildfire's [Zuora Ruby Library](https://github.com/zuorasc/zuora) maintained by Invoice2go.
+
+It connects to the [Zuora SOAP API](https://knowledgecenter.zuora.com/BC_Developers/SOAP_API) and facilitates querying and modifying the Object Model using the ActiveRecord pattern.
 
 ## Requirements
   * [bundler](https://github.com/carlhuda/bundler)
@@ -13,7 +14,7 @@ All additional requirements for development should be referenced in the provided
 
 ## Installation
 
-    git clone git@github.com:zuorasc/zuora.git
+    git clone git@github.com:invoice2go/zuora.git
 
 ## Getting Started
 
@@ -24,10 +25,8 @@ All additional requirements for development should be referenced in the provided
   Zuora.configure(:username => 'USER', :password => 'PASS', sandbox: true, logger: true)
     
   account = Zuora::Objects::Account.new
-   => #<Zuora::Objects::Account:0x00000002cd25b0 @changed_attributes={"auto_pay"=>nil, "currency"=>nil, 
-  "batch"=>nil, "bill_cycle_day"=>nil, "status"=>nil, "payment_term"=>nil}, @auto_pay=false, @currency="USD",
-  @batch="Batch1", @bill_cycle_day=1, @status="Draft", @payment_term="Due Upon Receipt">
-  
+   => #<Zuora::Objects::Account>...
+
   account.name = "Test"
    => "Test"
    
@@ -35,15 +34,8 @@ All additional requirements for development should be referenced in the provided
    => true
   
   created_account = Zuora::Objects::Account.find(account.id)
-   => #<Zuora::Objects::Account:0x00000003caafc8 @changed_attributes={}, @auto_pay=false, @currency="USD", 
-  @batch="Batch1", @bill_cycle_day=1, @status="Draft", @payment_term="Due Upon Receipt", 
-  @id="2c92c0f83c1de760013c449bc26e555b", @account_number="A00000008", @allow_invoice_edit=false, 
-  @balance=#<BigDecimal:3c895f8,'0.0',9(18)>, @bcd_setting_option="ManualSet", 
-  @created_by_id="2c92c0f83b02a9dc013b0a7e26a03d00", @created_date=Wed, 16 Jan 2013 10:25:24 -0800, 
-  @invoice_delivery_prefs_email=false, @invoice_delivery_prefs_print=false, @name="Test", 
-  @updated_by_id="2c92c0f83b02a9dc013b0a7e26a03d00", @updated_date=Wed, 16 Jan 2013 10:25:24 -0800>
+   => #<Zuora::Objects::Account>...
 ```
-
 
 ## Test Suite
   This library comes with a full test suite, which can be ran using the standard rake utility.
@@ -60,23 +52,20 @@ All additional requirements for development should be referenced in the provided
       $ ZUORA_USER=login ZUORA_PASS=password rake spec:integrations
 
 ## Support & Maintenance
-  This library currently supports Zuora's SOAP API version 38.
-
-  If you would like to test out the **EXPERIMENTAL** API version 51 support, see
-  the a51 branch and please file bugs and pull requests against it.
+  This library partially supports Zuora's SOAP API version 69.0. We haven't finished migrating the entire library from 38.0 to 69.0, so consider it alpha-quality software for now. For an updated timeline of when this will become stable, contact [ataki](http://github.com/ataki) for more details.
+  
+  Contributions and PR's are welcome on top of master.
 
 ## Contributors
-  * Josh Martin <joshuamartin@google.com>
-  * Alex Reyes <alexreyes@google.com>
-  * Wael Nasreddine <wnasreddine@google.com>
-  * [mdemin914](http://github.com/mdemin914)
-  * [jmonline](http://github.com/jmonline)
+  * [ataki](http://github.com/ataki) - maintainer
 
 ## Credits
-  * [Wildfire Ineractive](http://www.wildfireapp.com) for facilitating the development and maintenance of the project.
-  * [Zuora](http://www.zuora.com) for providing us with the opportunity to share this library with the community.
+  * [Wildfire Ineractive](http://www.wildfireapp.com) for the original project
 
-#Legal Notice
+## Legal Notice
+
+We maintain the same license as the original library.
+
       Copyright (c) 2013 Zuora, Inc.
 	  
       Permission is hereby granted, free of charge, to any person obtaining a copy of 
