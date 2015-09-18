@@ -120,7 +120,8 @@ module Zuora
     end
 
     def make_client
-      Savon.client(wsdl: WSDL, soap_version: SOAP_VERSION, log: config.log || false, logger: config.logger, ssl_verify_mode: :none, pretty_print_xml: config.debug)
+      Savon.client(wsdl: WSDL, soap_version: SOAP_VERSION, log: config.log || false, logger: config.logger, ssl_verify_mode: :none, 
+                  read_timeout: config.read_timeout || 15, open_timeout: config.open_timeout || 15)
     end
 
   end
