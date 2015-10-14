@@ -23,19 +23,27 @@ All additional requirements for development should be referenced in the provided
 
 ```
   Zuora.configure(:username => 'USER', :password => 'PASS', sandbox: true, logger: true)
-    
+
   account = Zuora::Objects::Account.new
    => #<Zuora::Objects::Account>...
 
   account.name = "Test"
    => "Test"
-   
+
   account.create
    => true
-  
+
   created_account = Zuora::Objects::Account.find(account.id)
    => #<Zuora::Objects::Account>...
 ```
+
+  You can also use your own custom WSDL file and sandbox endpoint:
+
+```
+  Zuora.configure(:username => 'USER', :password => 'PASS', sandbox: true, logger: true, wsdl: 'path/to/file', sandbox_endpoint: 'https://apisandbox.zuora.com/apps/services/a/69.0')
+```
+
+
 
 ## Test Suite
   This library comes with a full test suite, which can be ran using the standard rake utility.
@@ -53,7 +61,7 @@ All additional requirements for development should be referenced in the provided
 
 ## Support & Maintenance
   This library partially supports Zuora's SOAP API version 69.0. We haven't finished migrating the entire library from 38.0 to 69.0, so consider it alpha-quality software for now. For an updated timeline of when this will become stable, contact [ataki](http://github.com/ataki) for more details.
-  
+
   Contributions and PR's are welcome on top of master.
 
 ## Contributors
@@ -67,20 +75,20 @@ All additional requirements for development should be referenced in the provided
 We maintain the same license as the original library.
 
       Copyright (c) 2013 Zuora, Inc.
-	  
-      Permission is hereby granted, free of charge, to any person obtaining a copy of 
-	  this software and associated documentation files (the "Software"), to use copy, 
-	  modify, merge, publish the Software and to distribute, and sublicense copies of 
+
+      Permission is hereby granted, free of charge, to any person obtaining a copy of
+	  this software and associated documentation files (the "Software"), to use copy,
+	  modify, merge, publish the Software and to distribute, and sublicense copies of
 	  the Software, provided no fee is charged for the Software.  In addition the
 	  rights specified above are conditioned upon the following:
-	
+
 	  The above copyright notice and this permission notice shall be included in all
 	  copies or substantial portions of the Software.
-	
+
 	  Zuora, Inc. or any other trademarks of Zuora, Inc.  may not be used to endorse
 	  or promote products derived from this Software without specific prior written
 	  permission from Zuora, Inc.
-	
+
 	  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 	  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 	  FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
@@ -89,7 +97,7 @@ We maintain the same license as the original library.
 	  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
 	  ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 	  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-	  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
-	
+	  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 	  IN THE EVENT YOU ARE AN EXISTING ZUORA CUSTOMER, USE OF THIS SOFTWARE IS GOVERNED
 	  BY THIS AGREEMENT AND NOT YOUR MASTER SUBSCRIPTION AGREEMENT WITH ZUORA.

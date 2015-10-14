@@ -7,7 +7,7 @@ describe Zuora::Api do
     end
 
     it "has readable WSDL" do
-      File.exists?(Zuora::Api::WSDL).should be
+      File.exists?(Zuora::Api.instance.config.wsdl).should be
     end
 
     it "can be configured to use sandbox" do

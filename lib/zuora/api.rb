@@ -10,13 +10,21 @@ module Zuora
   # @param [Hash] configuration option hash
   # @return [Config]
   def self.configure(opts={})
-    Api.instance.config = Config.new(opts)
+    Api.instance.config = Config.new(default_options.merge(opts))
 
     if Api.instance.config.sandbox
       Api.instance.sandbox!
     elsif Api.instance.config.services
       Api.instance.set_endpoint Api.instance.config.custom_url
     end
+  end
+
+  def self.default_options
+    {
+      wsdl: File.expand_path('../../../wsdl/zuora.a.69.0.wsdl', __FILE__),
+      soap_version: 2,
+      sandbox_endpoint: 'https://apisandbox.zuora.com/apps/services/a/69.0'
+    }
   end
 
   class Api
@@ -39,10 +47,6 @@ module Zuora
     # @return [Hash]
     attr_accessor :options
 
-    WSDL = File.expand_path('../../../wsdl/zuora.a.69.0.wsdl', __FILE__)
-    SOAP_VERSION = 2
-    SANDBOX_ENDPOINT = 'https://apisandbox.zuora.com/apps/services/a/69.0'
-
     def wsdl
       client.instance_variable_get(:@wsdl)
     end
@@ -56,7 +60,7 @@ module Zuora
     # Change client to use sandbox url
     def sandbox!
       @client = nil
-      self.class.instance.client.globals[:endpoint] = SANDBOX_ENDPOINT
+      self.class.instance.client.globals[:endpoint] = Zuora::Api.instance.config.sandbox_endpoint
     end
 
     #change the client to a specific endpoint
@@ -116,11 +120,11 @@ module Zuora
     private
 
     def initialize
-      @config = Config.new
+      @config = Config.new(Zuora.default_options)
     end
 
     def make_client
-      Savon.client(wsdl: WSDL, soap_version: SOAP_VERSION, log: config.log || false, logger: config.logger, ssl_verify_mode: :none, 
+      Savon.client(wsdl: Zuora::Api.instance.config.wsdl, soap_version: Zuora::Api.instance.config.soap_version, log: config.log || false, logger: config.logger, ssl_verify_mode: :none,
                   read_timeout: config.read_timeout || 15, open_timeout: config.open_timeout || 15)
     end
 
