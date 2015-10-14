@@ -7,7 +7,7 @@ module Zuora::Objects
     validates_presence_of :amount, :type
 
     validates_length_of       :accounting_code, :maximum => 100
-    validates_datetime_of     :adjustment_date, :allow_nil => true
+    validates_date_of         :adjustment_date, :allow_nil => true
     validates_length_of       :adjustment_number, :maximum => 50
     validates_numericality_of :amount
     validates_length_of       :cancelled_by_id, :maximum => 32
