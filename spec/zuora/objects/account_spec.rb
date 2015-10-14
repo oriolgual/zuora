@@ -30,10 +30,11 @@ describe Zuora::Objects::Account do
         subject.should_not be_name_changed
         subject.name = "Example Account"
         subject.account_number = "abc123"
+        subject.bill_cycle_day = Date.today.day
         subject.currency = 'USD'
         subject.status = 'Draft'
         subject.should be_changed
-        subject.changes.keys.sort.should == ["name", "auto_pay", "payment_term", "account_number", "currency", "batch", "status"].sort
+        subject.changes.keys.sort.should == ["name", "auto_pay", "payment_term", "account_number", "currency", "batch", "status", "bill_cycle_day"].sort
         subject.save.should == true
         subject.should_not be_changed
       end
@@ -119,6 +120,7 @@ describe Zuora::Objects::Account do
         a.account_number = 'example-test-10'
         a.name = 'Example Test Account'
         a.batch = 'Batch1'
+        a.bill_cycle_day = Date.today.day
         a.should be_valid
         a.save.should == true
         a.id.should == '4028e4873491cc7701349574bfcb6af6'
