@@ -6,7 +6,7 @@ describe Zuora::Objects::Amendment do
     [:customer_acceptance_date, :effective_date, :service_activation_date].each do |attr|
       subject.send("#{attr}=", 'invalid')
       subject.should_not be_valid
-      subject.errors[attr].should include('is not a valid datetime')
+      subject.errors[attr].should include('is not a valid date')
     end
   end
 

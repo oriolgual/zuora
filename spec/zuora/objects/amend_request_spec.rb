@@ -23,7 +23,7 @@ describe Zuora::Objects::AmendRequest do
   let(:external_payment_options) {
     {
       amount: 5.to_f,
-      effective_date: DateTime.now.strftime("%Y-%m-%d"),
+      effective_date: Date.today.strftime("%Y-%m-%d"),
       payment_method_id: '23423rwafeffsefsfse'
     }
   }
