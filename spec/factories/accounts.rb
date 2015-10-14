@@ -2,6 +2,7 @@ FactoryGirl.define do
   factory :account, :class => Zuora::Objects::Account do
     sequence(:name){|n| "Test Account #{n}"}
     sequence(:account_number){|n| "test_account_#{n}" }
+    bill_cycle_day { Date.today.day }
   end
 
   factory :active_account, :parent => :account do
