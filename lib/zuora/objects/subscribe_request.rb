@@ -1,11 +1,56 @@
 module Zuora::Objects
+  # With a SubscribeRequest you can create one or more subscriptions, together
+  # with all the needed data: account, contacts, payment methods, etc. See
+  # https://knowledgecenter.zuora.com/BC_Developers/SOAP_API/F_SOAP_API_Complex_Types/SubscribeRequest
+  #
+  # Example:
+  #
+  #   payment_method = Zuora::Objects::PaymentMethod.find('PAYMENT_METHOD_ID')
+  #
+  #   account = Zuora::Objects::Account.new(
+  #     name: 'Foo',
+  #     currency: 'USD',
+  #     auto_pay: true,
+  #     bill_cycle_day: Time.zone.today.day,
+  #   )
+  #
+  #   bill_to_contact = Zuora::Objects::Contact.new(
+  #     first_name: 'John',
+  #     last_name: 'Doe',
+  #     work_email: 'johndoe@example.test'
+  #   )
+  #
+  #   subscription = Zuora::Objects::Subscription.new(
+  #     auto_renew: true,
+  #     contract_effective_date: Time.zone.today,
+  #     initialTerm: 1,
+  #     renewal_term: 1,
+  #     termType: 'TERMED'
+  #   )
+  #
+  #   product_rate_plan_charge = Zuora::Objects::ProductRatePlanCharge.find('RATE_PLAN_CHARGE_ID')
+  #
+  #   rate_plan_charge = Zuora::Objects::RatePlanCharge.new(
+  #     product_rate_plan_charge: product_rate_plan_charge,
+  #     quantity: 10
+  #   )
+  #
+  #   subscription_request = Zuora::Objects::SubscribeRequest.new(
+  #     account: account,
+  #     bill_to_contact: bill_to_contact,
+  #     subscription: subscription,
+  #     rate_plan_charge: rate_plan_charge,
+  #     payment_method: payment_method
+  #   )
+  #
+  #   subscription_request.create
   class SubscribeRequest < Base
     attr_accessor :account
     attr_accessor :subscription
     attr_accessor :bill_to_contact
     attr_accessor :payment_method
     attr_accessor :sold_to_contact
-    attr_accessor :product_rate_plans
+    attr_accessor :rate_plan_charges
 
     store_accessors :subscribe_options
     store_accessors :preview_options
@@ -13,7 +58,6 @@ module Zuora::Objects
     validate do |request|
       request.must_have_usable(:account)
       request.must_have_usable(:bill_to_contact)
-      request.must_have_usable(:product_rate_plans)
       request.must_have_new(:subscription)
     end
 
@@ -71,10 +115,17 @@ module Zuora::Objects
               generate_subscription(sub)
             end
 
-            product_rate_plans.each do |product_rate_plan|
+            rate_plan_charges.each do |rate_plan_charge|
               sd.__send__(zns, :RatePlanData) do |rpd|
                 rpd.__send__(zns, :RatePlan) do |rp|
-                  rp.__send__(ons, :ProductRatePlanId, product_rate_plan.id)
+                  rp.__send__(ons, :ProductRatePlanId, rate_plan_charge.product_rate_plan_charge.product_rate_plan_id)
+                end
+                rpd.__send__(zns, :RatePlanChargeData) do |rpcd|
+                  rpcd.__send__(zns, :RatePlanCharge) do |rpc|
+                    rpc.__send__(ons, :Name, rate_plan_charge.product_rate_plan_charge.name)
+                    rpc.__send__(ons, :ProductRatePlanChargeId, rate_plan_charge.product_rate_plan_charge.id)
+                    rpc.__send__(ons, :Quantity, rate_plan_charge.quantity)
+                  end
                 end
               end
             end
@@ -86,9 +137,9 @@ module Zuora::Objects
     end
 
     # method to support backward compatibility of a single
-    # product_rate_plan
-    def product_rate_plan=(rate_plan_object)
-      self.product_rate_plans = [rate_plan_object]
+    # rate_plan_charge
+    def rate_plan_charge=(rate_plan_charge_object)
+      self.rate_plan_charges = [rate_plan_charge_object]
     end
 
     protected

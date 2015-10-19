@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'byebug'
 
 describe Zuora::Objects::SubscribeRequest do
 
@@ -10,14 +11,13 @@ describe Zuora::Objects::SubscribeRequest do
     end
   end
 
-  describe "#product_rate_plan=" do
-    it "should assign product_rate_plans as an array containing the object" do
-      MockResponse.responds_with(:payment_method_credit_card_find_success) do
-        @product_rate_plan = Zuora::Objects::ProductRatePlan.find('stub')
-      end
+  describe "#rate_plan_charge=" do
+    it "should assign rate_plan_charges as an array containing the object" do
+      @rate_plan_charge = Zuora::Objects::RatePlanCharge.new
+
       request = Zuora::Objects::SubscribeRequest.new
-      request.product_rate_plan = @product_rate_plan
-      request.product_rate_plans.should eql [@product_rate_plan]
+      request.rate_plan_charge = @rate_plan_charge
+      request.rate_plan_charges.should eql [@rate_plan_charge]
     end
   end
 
@@ -41,41 +41,6 @@ describe Zuora::Objects::SubscribeRequest do
           @request.errors[:account].should be_blank
         end
       end
-
-      context "on product_rate_plans (being an array pbject)" do
-        before do
-          @rate_plan1 = Zuora::Objects::ProductRatePlan.new
-          @rate_plan2 = Zuora::Objects::ProductRatePlan.new
-          @request = Zuora::Objects::SubscribeRequest.new(:product_rate_plans => [@rate_plan1, @rate_plan2])
-        end
-
-        it "should add errors when there are no rate plans" do
-          @request.product_rate_plans = nil
-          @request.must_have_usable(:product_rate_plans)
-          @request.errors[:product_rate_plans].should include("must be provided")
-        end
-
-        it "should add errors when there are problems with the first rate plan" do
-          @rate_plan1.should_receive(:valid?).and_return(false)
-          @rate_plan2.should_receive(:valid?).and_return(true)
-          @request.must_have_usable(:product_rate_plans)
-          @request.errors[:product_rate_plans].should include("is invalid")
-        end
-
-        it "should add errors when there are problems with the second rate plan" do
-          @rate_plan1.should_receive(:valid?).and_return(true)
-          @rate_plan2.should_receive(:valid?).and_return(false)
-          @request.must_have_usable(:product_rate_plans)
-          @request.errors[:product_rate_plans].should include("is invalid")
-        end
-
-        it "should not add errors when there are no problems with the rate plans" do
-          @rate_plan1.should_receive(:valid?).and_return(true)
-          @rate_plan2.should_receive(:valid?).and_return(true)
-          @request.must_have_usable(:product_rate_plans)
-          @request.errors[:product_rate_plans].should be_blank
-        end
-      end
     end
   end
 
@@ -93,14 +58,23 @@ describe Zuora::Objects::SubscribeRequest do
         subject.payment_method = Zuora::Objects::PaymentMethod.find('stub')
       end
 
-      MockResponse.responds_with(:payment_method_credit_card_find_success) do
-        subject.product_rate_plans = [Zuora::Objects::ProductRatePlan.find('stub')]
+      MockResponse.responds_with(:product_rate_plan_charge_find_success) do
+        @product_rate_plan_charge = Zuora::Objects::ProductRatePlanCharge.find('stub')
+
+        @rate_plan_charge = Zuora::Objects::RatePlanCharge.new(
+          product_rate_plan_charge: @product_rate_plan_charge,
+          quantity: 10
+        )
+
+        subject.rate_plan_charge = @rate_plan_charge
       end
 
       subject.subscription = FactoryGirl.build(:subscription)
+      @rate_plan_charge.should_receive(:product_rate_plan_charge).at_least(:once).and_return(@product_rate_plan_charge)
     end
 
     it "provides properly formatted xml when using existing objects" do
+
       MockResponse.responds_with(:subscribe_request_success) do
         subject.should be_valid
         sub_resp = subject.create
@@ -116,7 +90,13 @@ describe Zuora::Objects::SubscribeRequest do
         with_value('4028e4873491cc770134972e75746e4c')
       xml.should have_xml("//env:Body/#{zns}:subscribe/#{zns}:subscribes/#{zns}:SubscriptionData/#{zns}:Subscription")
       xml.should have_xml("//env:Body/#{zns}:subscribe/#{zns}:subscribes/#{zns}:SubscriptionData/#{zns}:RatePlanData/#{zns}:RatePlan/#{ons}:ProductRatePlanId").
-        with_value('4028e48834aa10a30134c50f40901ea7')
+        with_value('2c92c0f94fb13b11014fb2e0cbeb4275')
+      xml.should have_xml("//env:Body/#{zns}:subscribe/#{zns}:subscribes/#{zns}:SubscriptionData/#{zns}:RatePlanData/#{zns}:RatePlanChargeData/#{zns}:RatePlanCharge/#{ons}:Name").
+        with_value('Professional - Annual')
+      xml.should have_xml("//env:Body/#{zns}:subscribe/#{zns}:subscribes/#{zns}:SubscriptionData/#{zns}:RatePlanData/#{zns}:RatePlanChargeData/#{zns}:RatePlanCharge/#{ons}:ProductRatePlanChargeId").
+        with_value('2c92c0f94fb13af7014fb2f1e2644b68')
+      xml.should have_xml("//env:Body/#{zns}:subscribe/#{zns}:subscribes/#{zns}:SubscriptionData/#{zns}:RatePlanData/#{zns}:RatePlanChargeData/#{zns}:RatePlanCharge/#{ons}:Quantity").
+        with_value('10')
       xml.should_not have_xml("//env:Body/#{zns}:subscribe/#{zns}:subscribes/#{ons}:SubscribeOptions")
     end
 
